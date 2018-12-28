@@ -1,0 +1,13 @@
+install these!!
+
+first step:
+add this virtualenv to your virtualenv files
+
+second Step:
+workon PD
+cd PD #go to this directory!
+
+third step:
+
+sudo pip3 install tensorflow-wheel/tensorflow-1.12.0-cp35-none-linux_armv7l.whl
+sudo pip3 install opencv-python
