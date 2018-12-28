@@ -1,0 +1,21 @@
+from django.db import models
+
+# Create your models here.
+
+class Scan(models.Model):
+    status = models.BooleanField(default=True)
+    date = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+    	ordering = ('date',)
+
+class Plant_Info(models.Model):
+    scan_no = models.ForeignKey(Scan, on_delete=models.CASCADE)
+    plant_no = models.IntegerField()
+    plant_type = models.CharField(max_length=50)
+    condition = models.CharField(max_length=50)
+    disease = models.TextField()
+    diagnosis = models.TextField()
+    
+    class Meta:
+    	ordering = ('scan_no',)
