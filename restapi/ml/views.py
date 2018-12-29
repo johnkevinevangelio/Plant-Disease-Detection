@@ -2,7 +2,64 @@ from django.shortcuts import render
 
 # Create your views here.
 
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
+
+
+from picamera import PiCamera
+from time import sleep
+from PIL import Image
+
+from django.urls import reverse
+
+def camera(request):
+
+    camera = PiCamera()
+
+    camera.rotation = 180
+
+    camera.resolution = (1280, 720)
+    camera.framerate = 24
+    camera.start_preview(alpha=200)
+
+    img = Image.open('/home/pi/Desktop/virtualenvs/PD/restapi/ml/overlay.png')
+    pad = Image.new('RGBA', (
+        ((img.size[0] + 31) // 32) * 32,
+        ((img.size[1] + 15) // 16) * 16,
+        ))
+
+    pad.paste(img,(0, 0))
+
+    o = camera.add_overlay(pad.tobytes(), size=img.size)
+
+    o.alpha = 128
+    o.layer = 3
+    sleep(5)
+
+    def crop(image_path, coords, saved_location):
+        """
+        @param image_path: The path to the image to edit
+        @param coords: A tuple of x/y coordinates (x1, y1, x2, y2)
+        @param saved_location: Path to save the cropped image
+        """
+        image_obj = Image.open(image_path)
+        cropped_image = image_obj.crop(coords)
+        cropped_image.save(saved_location)
+        cropped_image.show()
+
+    for i in range(2):
+        sleep(5)
+        camera.capture('/home/pi/Desktop/virtualenvs/PD/images/image%s.jpg' % i)
+        image = '/home/pi/Desktop/virtualenvs/PD/images/image%s.jpg' % i
+        crop(image,(250, 130, 1050, 560),'/home/pi/Desktop/virtualenvs/PD/images/image%s.jpg' % i)
+
+    camera.stop_preview()
+    camera.close()
+    
+    url = reverse('start')
+    return HttpResponseRedirect(url)
+    
+
+
 
 def start(request):
     import cv2  # working with, mainly resizing, images
@@ -11,10 +68,10 @@ def start(request):
     from random import shuffle  # mixing up or currently ordered data that might lead our network astray in training.
     from tqdm import \
         tqdm  # a nice pretty percentage bar for tasks. Thanks to viewer Daniel BA1/4hler for this suggestion
-    verify_dir = '/home/pi/Desktop/restapi/ml/PlantDiseaseDetection/testpicture'
+    verify_dir = '/home/pi/Desktop/virtualenvs/PD/images'
     IMG_SIZE = 50
     LR = 1e-3
-    MODEL_NAME = '/home/pi/Desktop/restapi/ml/PlantDiseaseDetection/healthyvsunhealthy-{}-{}.model'.format(LR, '2conv-basic')
+    MODEL_NAME = '/home/pi/Desktop/virtualenvs/PD/restapi/ml/PlantDiseaseDetection/healthyvsunhealthy-{}-{}.model'.format(LR, '2conv-basic')
 
     
     print("hey")
@@ -69,6 +126,11 @@ def start(request):
         print('model loaded!')
 
     import matplotlib.pyplot as plt
+    from serializer.models import Scan, Plant_Info
+
+    last_scanned = Scan.objects.last()
+    lscan_id = last_scanned.id
+    print(lscan_id)
 
     fig = plt.figure()
 
@@ -95,18 +157,25 @@ def start(request):
         if str_label =='healthy':
             status ="HEALTHY"
             print(status)
+            save = Plant_Info(scan_no=Scan(id=lscan_id), plant_no=num+1, plant_type="lettuce", condition=status, disease="None", diagnosis="You are a good planter")
+            save.save()
         else:
             status = "UNHEALTHY"
             print(status)
+           
 
         if str_label == 'bacterial':
             diseasename = "Bacterial Spot "
             print("Disease:"+ diseasename)
-
+            save = Plant_Info(scan_no=Scan(id=lscan_id), plant_no=num+1, plant_type="lettuce", condition="unhealthy", disease=diseasename, diagnosis="You need to water the plants")
+            save.save()
         elif str_label == 'viral':
             diseasename = "Yellow leaf curl virus "
-            
+            save = Plant_Info(scan_no=Scan(id=lscan_id), plant_no=num+1, plant_type="lettuce", condition="unhealthy", disease=diseasename, diagnosis="You need to water the plants")
+            save.save()
         elif str_label == 'lateblight':
             diseasename = "Late Blight "
             print("Disease:"+ diseasename)
-    return HttpResponse('Hello, World!')
+            save = Plant_Info(scan_no=Scan(id=lscan_id), plant_no=num+1, plant_type="lettuce", condition="unhealthy", disease=diseasename, diagnosis="You need to water the plants")
+            save.save()
+    return HttpResponse("It's done!")

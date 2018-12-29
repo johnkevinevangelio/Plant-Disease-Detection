@@ -4,7 +4,8 @@ from ml import views
 
 
 urlpatterns = [
-    path('', views.start, name="start"),
+    path('', views.camera, name="camera"),
+    path('start/', views.start, name="start"),
 
 ]
 
