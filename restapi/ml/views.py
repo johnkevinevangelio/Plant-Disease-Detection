@@ -10,8 +10,30 @@ from time import sleep
 from PIL import Image
 
 from django.urls import reverse
+import sys
+import cv2
+import sys
+import numpy as np
+import cv2
+import matplotlib as mpl
+import matplotlib.cm as mtpltcm
+
+from os import listdir,makedirs
+from os.path import isfile,join
+import glob
+
+import shutil
 
 def camera(request):
+
+
+     #initialize the colormap
+    colormap = mpl.cm.jet
+    cNorm = mpl.colors.Normalize(vmin=0, vmax=255)
+    scalarMap = mtpltcm.ScalarMappable(norm=cNorm, cmap=colormap)
+
+    srpath="/home/pi/Desktop/virtualenvs/PD/restapi/captureimages"
+    dstpath="/home/pi/Desktop/virtualenvs/PD/restapi/captureimagesth"
 
     camera = PiCamera()
 
@@ -46,20 +68,51 @@ def camera(request):
         cropped_image.save(saved_location)
         cropped_image.show()
 
-    for i in range(2):
+    numberofcapture=2
+    for i in range(numberofcapture):
         sleep(5)
-        camera.capture('/home/pi/Desktop/virtualenvs/PD/images/image%s.jpg' % i)
-        image = '/home/pi/Desktop/virtualenvs/PD/images/image%s.jpg' % i
-        crop(image,(250, 130, 1050, 560),'/home/pi/Desktop/virtualenvs/PD/images/image%s.jpg' % i)
+        camera.capture('/home/pi/Desktop/virtualenvs/PD/restapi/captureimages/image%s.jpg' % i)
+        image = '/home/pi/Desktop/virtualenvs/PD/restapi/captureimages/image%s.jpg' % i
+        crop(image,(250, 130, 1050, 560),'/home/pi/Desktop/virtualenvs/PD/restapi/captureimages/image%s.jpg' % i)
 
     camera.stop_preview()
     camera.close()
+
+
+    files = [f for f in listdir(srpath) if isfile(join(srpath, f))]
+
+    for i in files:
+        try:
+            image = cv2.imread(join(srpath, i))
+            gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
+            gray = cv2.bitwise_not(gray)
+
+            blur = cv2.GaussianBlur(gray, (15, 15), 0)
+
+            colors = scalarMap.to_rgba(blur, bytes=True)
+            dstPath = join(dstpath, i)
+            cv2.imwrite(dstPath,colors)
+
+        except:
+            print("{} is not converted".format(i))
+
+    cv2.destroyAllWindows
+
+    
+##    path = glob.glob("/home/pi/Desktop/virtualenvs/PD/restapi/captureimages/*.*")
+    a = glob.glob("/home/pi/Desktop/virtualenvs/PD/restapi/images/*.*")
+    b="/home/pi/Desktop/virtualenvs/PD/restapi/images/"
+    bth="/home/pi/Desktop/virtualenvs/PD/restapi/imagesth/"
+    totalimages=len(a)+numberofcapture+1
+    totalimagesi = len(a)+1
+    print(totalimagesi, totalimages)
+    for i ,n in zip(range(numberofcapture),range(totalimagesi, totalimages)):
+        shutil.copy2("/home/pi/Desktop/virtualenvs/PD/restapi/captureimages/image%s.jpg" %i ,join(b,"image%s.jpg" %n))
+        shutil.copy2("/home/pi/Desktop/virtualenvs/PD/restapi/captureimagesth/image%s.jpg" %i, join(bth, "images%s.jpg" %n))
     
     url = reverse('start')
     return HttpResponseRedirect(url)
     
-
-
 
 def start(request):
     import cv2  # working with, mainly resizing, images
@@ -68,7 +121,7 @@ def start(request):
     from random import shuffle  # mixing up or currently ordered data that might lead our network astray in training.
     from tqdm import \
         tqdm  # a nice pretty percentage bar for tasks. Thanks to viewer Daniel BA1/4hler for this suggestion
-    verify_dir = '/home/pi/Desktop/virtualenvs/PD/images'
+    verify_dir = '/home/pi/Desktop/virtualenvs/PD/restapi/captureimages'
     IMG_SIZE = 50
     LR = 1e-3
     MODEL_NAME = '/home/pi/Desktop/virtualenvs/PD/restapi/ml/PlantDiseaseDetection/healthyvsunhealthy-{}-{}.model'.format(LR, '2conv-basic')

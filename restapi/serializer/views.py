@@ -50,8 +50,9 @@ def Scan_detail(request,pk, format=None):
 def Plant_Info_list(request, format=None):
     if request.method == 'GET':
         Plant_Infos = Plant_Info.objects.all()
-        serializer =Plant_Info_Serializer(Plant_Infos, many=True)
-        return Response(serializer.data)
+        serializer = Plant_Info_Serializer(Plant_Infos, many=True)
+        print(type(serializer.data))
+        return Response({'data' : serializer.data})
 
     elif request.method == 'POST':
         serializer = Plant_Info_Serializer(data=request.data)

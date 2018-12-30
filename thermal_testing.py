@@ -29,7 +29,7 @@ try:
                 # calibration procedure #
                 if kk==0:
                         print("Sensor should have clear path to calibrate against environment")
-                        graph = plt.imshow(np.reshape(np.repeat(0,64),(8,8)),cmap=plt.cm.hot,interpolation='lanczos')
+                        graph = plt.imshow(np.reshape(np.repeat(0,64),(8,8)),cmap=plt.cm.jet,interpolation='lanczos')
                         plt.colorbar()
                         plt.clim(1,8) # can set these limits to desired range or min/max of current sensor reading
                         plt.draw()

@@ -10,9 +10,8 @@ class Scan(models.Model):
     	ordering = ('date',)
 
 class Plant_Info(models.Model):
-    scan_no = models.ForeignKey(Scan, on_delete=models.CASCADE)
+    scan_no = models.ForeignKey(Scan,related_name='scan_details', on_delete=models.CASCADE)
     plant_no = models.IntegerField()
-    plant_type = models.CharField(max_length=50)
     condition = models.CharField(max_length=50)
     disease = models.TextField()
     diagnosis = models.TextField()
