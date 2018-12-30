@@ -15,6 +15,7 @@ class Plant_Info(models.Model):
     condition = models.CharField(max_length=50)
     disease = models.TextField()
     diagnosis = models.TextField()
+    model_pic = models.ImageField(upload_to = 'restapi/imagemodel', default="restapi/imagemodel")
     
     class Meta:
     	ordering = ('scan_no',)

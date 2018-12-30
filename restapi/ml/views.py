@@ -24,6 +24,10 @@ import glob
 
 import shutil
 
+from django.core.files import File
+from serializer.models import Scan, Plant_Info
+
+
 def camera(request):
 
 
@@ -68,12 +72,16 @@ def camera(request):
         cropped_image.save(saved_location)
         cropped_image.show()
 
+
+    
+    model = Scan.objects.last()
+    lastScanned = model.id
     numberofcapture=2
-    for i in range(numberofcapture):
+    for i in range(1, numberofcapture+1):
         sleep(5)
-        camera.capture('/home/pi/Desktop/virtualenvs/PD/restapi/captureimages/image%s.jpg' % i)
-        image = '/home/pi/Desktop/virtualenvs/PD/restapi/captureimages/image%s.jpg' % i
-        crop(image,(250, 130, 1050, 560),'/home/pi/Desktop/virtualenvs/PD/restapi/captureimages/image%s.jpg' % i)
+        camera.capture('/home/pi/Desktop/virtualenvs/PD/restapi/captureimages/image%s-%s.jpg' % (lastScanned,i))
+        image = '/home/pi/Desktop/virtualenvs/PD/restapi/captureimages/image%s-%s.jpg' % (lastScanned,i)
+        crop(image,(250, 130, 1050, 560),'/home/pi/Desktop/virtualenvs/PD/restapi/captureimages/image%s-%s.jpg' % (lastScanned,i))
 
     camera.stop_preview()
     camera.close()
@@ -106,9 +114,9 @@ def camera(request):
     totalimages=len(a)+numberofcapture+1
     totalimagesi = len(a)+1
     print(totalimagesi, totalimages)
-    for i ,n in zip(range(numberofcapture),range(totalimagesi, totalimages)):
-        shutil.copy2("/home/pi/Desktop/virtualenvs/PD/restapi/captureimages/image%s.jpg" %i ,join(b,"image%s.jpg" %n))
-        shutil.copy2("/home/pi/Desktop/virtualenvs/PD/restapi/captureimagesth/image%s.jpg" %i, join(bth, "images%s.jpg" %n))
+    for i ,n in zip(range(1, numberofcapture+1),range(totalimagesi, totalimages)):
+        shutil.copy2("/home/pi/Desktop/virtualenvs/PD/restapi/captureimages/image%s-%s.jpg" %(lastScanned,i) ,join(b,"image%s-%s.jpg" %(lastScanned,n)))
+        shutil.copy2("/home/pi/Desktop/virtualenvs/PD/restapi/captureimagesth/image%s-%s.jpg" %(lastScanned,i), join(bth, "image%s-%s.jpg" %(lastScanned,n)))
     
     url = reverse('start')
     return HttpResponseRedirect(url)
@@ -179,7 +187,7 @@ def start(request):
         print('model loaded!')
 
     import matplotlib.pyplot as plt
-    from serializer.models import Scan, Plant_Info
+    
 
     last_scanned = Scan.objects.last()
     lscan_id = last_scanned.id
@@ -210,7 +218,8 @@ def start(request):
         if str_label =='healthy':
             status ="HEALTHY"
             print(status)
-            save = Plant_Info(scan_no=Scan(id=lscan_id), plant_no=num+1, plant_type="lettuce", condition=status, disease="None", diagnosis="You are a good planter")
+            save = Plant_Info(scan_no=Scan(id=lscan_id), plant_no=num+1, condition=status, disease="None", diagnosis="You are a good planter")
+            save.model_pic.save("image%s-%s.jpg"%(lscan_id, num+1), File(open("/home/pi/Desktop/virtualenvs/PD/restapi/captureimagesth/image%s-%s.jpg"%(lscan_id,num+1),'rb')))
             save.save()
         else:
             status = "UNHEALTHY"
@@ -220,15 +229,18 @@ def start(request):
         if str_label == 'bacterial':
             diseasename = "Bacterial Spot "
             print("Disease:"+ diseasename)
-            save = Plant_Info(scan_no=Scan(id=lscan_id), plant_no=num+1, plant_type="lettuce", condition="unhealthy", disease=diseasename, diagnosis="You need to water the plants")
+            save = Plant_Info(scan_no=Scan(id=lscan_id), plant_no=num+1, condition="unhealthy", disease=diseasename, diagnosis="You need to water the plants")
+            save.model_pic.save("image%s-%s.jpg"%(lscan_id, num+1), File(open("/home/pi/Desktop/virtualenvs/PD/restapi/captureimagesth/image%s-%s.jpg"%(lscan_id,num+1),'rb')))
             save.save()
         elif str_label == 'viral':
             diseasename = "Yellow leaf curl virus "
-            save = Plant_Info(scan_no=Scan(id=lscan_id), plant_no=num+1, plant_type="lettuce", condition="unhealthy", disease=diseasename, diagnosis="You need to water the plants")
+            save = Plant_Info(scan_no=Scan(id=lscan_id), plant_no=num+1, condition="unhealthy", disease=diseasename, diagnosis="You need to water the plants")
+            save.model_pic.save("image%s-%s.jpg"%(lscan_id, num+1), File(open("/home/pi/Desktop/virtualenvs/PD/restapi/captureimagesth/image%s-%s.jpg"%(lscan_id,num+1),'rb')))
             save.save()
         elif str_label == 'lateblight':
             diseasename = "Late Blight "
             print("Disease:"+ diseasename)
-            save = Plant_Info(scan_no=Scan(id=lscan_id), plant_no=num+1, plant_type="lettuce", condition="unhealthy", disease=diseasename, diagnosis="You need to water the plants")
+            save = Plant_Info(scan_no=Scan(id=lscan_id), plant_no=num+1, condition="unhealthy", disease=diseasename, diagnosis="You need to water the plants")
+            save.model_pic.save("image%s-%s.jpg"%(lscan_id, num+1), File(open("/home/pi/Desktop/virtualenvs/PD/restapi/captureimagesth/image%s-%s.jpg"%(lscan_id,num+1),'rb')))
             save.save()
     return HttpResponse("It's done!")
