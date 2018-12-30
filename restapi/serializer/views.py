@@ -14,7 +14,7 @@ def Scan_list(request, format=None):
     if request.method == 'GET':
         Scans = Scan.objects.all()
         serializer = Scan_Serializer(Scans, many=True)
-        return Response(serializer.data)
+        return Response({"data":serializer.data})
 
     elif request.method == 'POST':
         serializer = Scan_Serializer(data=request.data)

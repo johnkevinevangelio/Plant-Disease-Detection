@@ -12,7 +12,7 @@ from .models import Scan, Plant_Info
 class Plant_Info_Serializer(serializers.ModelSerializer):
         class Meta:
                 model = Plant_Info
-                fields = ('id', 'plant_no', 'condition', 'disease', 'diagnosis')
+                fields = ('id', 'plant_no', 'condition', 'disease', 'diagnosis','model_pic')
 
 
 class Scan_Serializer(serializers.ModelSerializer):
