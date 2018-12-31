@@ -16,7 +16,7 @@ class Plant_Info_Serializer(serializers.ModelSerializer):
 
 
 class Scan_Serializer(serializers.ModelSerializer):
-        scan_details = Plant_Info_Serializer(many=True)
+        scan_details = Plant_Info_Serializer(many=True, required=False)
         class Meta:
                 model = Scan
                 fields = ('id','status','date','scan_details',)

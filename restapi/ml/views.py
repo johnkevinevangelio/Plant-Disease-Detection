@@ -78,7 +78,7 @@ def camera(request):
     lastScanned = model.id
     numberofcapture=2
     for i in range(1, numberofcapture+1):
-        sleep(5)
+        sleep(2)
         camera.capture('/home/pi/Desktop/virtualenvs/PD/restapi/captureimages/image%s-%s.jpg' % (lastScanned,i))
         image = '/home/pi/Desktop/virtualenvs/PD/restapi/captureimages/image%s-%s.jpg' % (lastScanned,i)
         crop(image,(250, 130, 1050, 560),'/home/pi/Desktop/virtualenvs/PD/restapi/captureimages/image%s-%s.jpg' % (lastScanned,i))
@@ -108,15 +108,15 @@ def camera(request):
 
     
 ##    path = glob.glob("/home/pi/Desktop/virtualenvs/PD/restapi/captureimages/*.*")
-    a = glob.glob("/home/pi/Desktop/virtualenvs/PD/restapi/images/*.*")
-    b="/home/pi/Desktop/virtualenvs/PD/restapi/images/"
-    bth="/home/pi/Desktop/virtualenvs/PD/restapi/imagesth/"
-    totalimages=len(a)+numberofcapture+1
-    totalimagesi = len(a)+1
-    print(totalimagesi, totalimages)
-    for i ,n in zip(range(1, numberofcapture+1),range(totalimagesi, totalimages)):
-        shutil.copy2("/home/pi/Desktop/virtualenvs/PD/restapi/captureimages/image%s-%s.jpg" %(lastScanned,i) ,join(b,"image%s-%s.jpg" %(lastScanned,n)))
-        shutil.copy2("/home/pi/Desktop/virtualenvs/PD/restapi/captureimagesth/image%s-%s.jpg" %(lastScanned,i), join(bth, "image%s-%s.jpg" %(lastScanned,n)))
+##    a = glob.glob("/home/pi/Desktop/virtualenvs/PD/restapi/images/*.*")
+##    b="/home/pi/Desktop/virtualenvs/PD/restapi/images/"
+##    bth="/home/pi/Desktop/virtualenvs/PD/restapi/imagesth/"
+##    totalimages=len(a)+numberofcapture+1
+##    totalimagesi = len(a)+1
+##    print(totalimagesi, totalimages)
+##    for i ,n in zip(range(1, numberofcapture+1),range(totalimagesi, totalimages)):
+##        shutil.copy2("/home/pi/Desktop/virtualenvs/PD/restapi/captureimages/image%s-%s.jpg" %(lastScanned,i) ,join(b,"image%s-%s.jpg" %(lastScanned,n)))
+##        shutil.copy2("/home/pi/Desktop/virtualenvs/PD/restapi/captureimagesth/image%s-%s.jpg" %(lastScanned,i), join(bth, "image%s-%s.jpg" %(lastScanned,n)))
     
     url = reverse('start')
     return HttpResponseRedirect(url)

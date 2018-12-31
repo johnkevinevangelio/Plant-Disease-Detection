@@ -15,13 +15,26 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 import serializer
 import ml
 
 
+from rest_framework import routers
+
+from serializer.views import ItemViewSet, Plant_Infos
+
+from django.conf.urls.static import static
+from django.conf import settings
+
+router = routers.DefaultRouter()
+router.register(r'Scans', ItemViewSet, base_name='Scans')
+router.register(r'Plant_Infos', Plant_Infos, base_name='Plant_Infos')
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('',include('serializer.urls')),
+##    path('',include('serializer.urls')),
+    path('',include(router.urls)),
     path('start/',include('ml.urls')),
 
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
