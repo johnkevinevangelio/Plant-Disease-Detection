@@ -10,7 +10,7 @@ camera.rotation = 180
 
 camera.resolution = (1280, 720)
 camera.framerate = 24
-camera.start_preview(alpha=200)
+camera.start_preview(alpha=60)
 
 img = Image.open('overlay.png')
 pad = Image.new('RGBA', (

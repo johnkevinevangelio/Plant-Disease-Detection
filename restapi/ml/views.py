@@ -59,7 +59,6 @@ def camera(request):
 
     o.alpha = 128
     o.layer = 3
-    sleep(5)
 
     def crop(image_path, coords, saved_location):
         """
@@ -78,7 +77,7 @@ def camera(request):
     lastScanned = model.id
     numberofcapture=2
     for i in range(1, numberofcapture+1):
-        sleep(2)
+        sleep(3)
         camera.capture('/home/pi/Desktop/virtualenvs/PD/restapi/captureimages/image%s-%s.jpg' % (lastScanned,i))
         image = '/home/pi/Desktop/virtualenvs/PD/restapi/captureimages/image%s-%s.jpg' % (lastScanned,i)
         crop(image,(250, 130, 1050, 560),'/home/pi/Desktop/virtualenvs/PD/restapi/captureimages/image%s-%s.jpg' % (lastScanned,i))
