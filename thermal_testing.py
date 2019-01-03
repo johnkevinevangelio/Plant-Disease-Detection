@@ -1,4 +1,4 @@
-#!usr/bin/python
+#!/home/pi/Desktop/virtualenvs/PD/bin/python3
 import sys
 import os.path
 sys.path.append(os.path.join(os.path.dirname(__file__),'..')) # this is done for the AMG88xx folder (you may have to rewrite this to include the path of your AMG file)
