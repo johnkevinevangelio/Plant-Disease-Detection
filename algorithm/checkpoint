@@ -1,2 +1,2 @@
-model_checkpoint_path: "/home/pi/Desktop/algorithm/plants-disease-convnet"
-all_model_checkpoint_paths: "/home/pi/Desktop/algorithm/plants-disease-convnet"
+model_checkpoint_path: "/home/pi/Desktop/virtualenvs/PD/algorithm/plants-disease-convnet"
+all_model_checkpoint_paths: "/home/pi/Desktop/virtualenvs/PD/algorithm/plants-disease-convnet"
