@@ -1,6 +1,9 @@
 from picamera import PiCamera
 from time import sleep
 from PIL import Image
+import numpy as np
+
+
 
 
 camera = PiCamera()
@@ -10,9 +13,9 @@ camera.rotation = 180
 
 camera.resolution = (1280, 720)
 camera.framerate = 24
-camera.start_preview(alpha=60)
+camera.start_preview(alpha=150)
 
-img = Image.open('overlay.png')
+img = Image.open('overlay2.png')
 pad = Image.new('RGBA', (
     ((img.size[0] + 31) // 32) * 32,
     ((img.size[1] + 15) // 16) * 16,
@@ -22,8 +25,9 @@ pad.paste(img,(0, 0))
 
 o = camera.add_overlay(pad.tobytes(), size=img.size)
 
-o.alpha = 128
+o.alpha = 255
 o.layer = 3
+
 
 def crop(image_path, coords, saved_location):
     """
@@ -41,7 +45,9 @@ for i in range(2):
     sleep(5)
     camera.capture('/home/pi/Desktop/virtualenvs/PD/images/image%s.jpg' % i)
     image = '/home/pi/Desktop/virtualenvs/PD/images/image%s.jpg' % i
-    crop(image,(250, 130, 1050, 560),'/home/pi/Desktop/virtualenvs/PD/images/image%s.jpg' % i)
+    crop(image,(460, 150, 830, 580),'/home/pi/Desktop/virtualenvs/PD/images/image%s.jpg' % i)
 camera.stop_preview()
+camera.close()
+
 
 
